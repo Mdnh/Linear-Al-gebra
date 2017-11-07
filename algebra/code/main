@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Algebra.java</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+body {color: #000000; background-color: #ffffff; font-family: Monospaced}
+pre {color: #000000; background-color: #ffffff; font-family: Monospaced}
+table {color: #000000; background-color: #e9e8e2; font-family: Monospaced}
+.ST1 {font-family: Monospaced; font-weight: bold; font-style: italic}
+.ST3 {font-family: Monospaced; font-style: italic}
+.ST0 {font-family: Monospaced; font-weight: bold}
+.ST2 {color: #009900}
+.comment {color: #969696}
+.literal {color: #0000e6}
+-->
+</style>
+</head>
+<body>
+<table width="100%"><tr><td align="center">/home/ghaith/NetBeansProjects/algebra/src/algebra/Algebra.java</td></tr></table>
+<pre>
+  1 <span class="literal">package</span> algebra;
+  2 
+  3 <span class="literal">public</span> <span class="literal">class</span> <span class="ST0">Algebra</span> {
+  4 
+  5     <span class="literal">static</span> <span class="literal">double</span> <span class="ST1">abs</span>(<span class="literal">double</span> a) {
+  6         <span class="literal">if</span> (a &gt; 0) {
+  7             <span class="literal">return</span> a;
+  8         }
+  9         <span class="literal">return</span> -a;
+ 10     }
+ 11 
+ 12     <span class="literal">static</span> <span class="literal">double</span>[] <span class="ST1">gauss</span>(<span class="literal">double</span>[][] A) {
+ 13         <span class="literal">int</span> n = A.<span class="ST2">length</span>;
+ 14 
+ 15         <span class="literal">for</span> (<span class="literal">int</span> i = 0; i &lt; n; i++) {
+ 16             <span class="comment">// Search for maximum in this column</span>
+ 17             <span class="literal">double</span> maxEl = <span class="ST3">abs</span>(A[i][i]);
+ 18             <span class="literal">int</span> maxRow = i;
+ 19             <span class="literal">for</span> (<span class="literal">int</span> k = i + 1; k &lt; n; k++) {
+ 20                 <span class="literal">if</span> (<span class="ST3">abs</span>(A[k][i]) &gt; maxEl) {
+ 21                     maxEl = <span class="ST3">abs</span>(A[k][i]);
+ 22                     maxRow = k;
+ 23                 }
+ 24             }
+ 25 
+ 26             <span class="comment">// Swap maximum row with current row (column by column)</span>
+ 27             <span class="literal">for</span> (<span class="literal">int</span> k = i; k &lt; n + 1; k++) {
+ 28                 <span class="literal">double</span> tmp = A[maxRow][k];
+ 29                 A[maxRow][k] = A[i][k];
+ 30                 A[i][k] = tmp;
+ 31             }
+ 32 
+ 33             <span class="comment">// Make all rows below this one 0 in current column</span>
+ 34             <span class="literal">for</span> (<span class="literal">int</span> k = i + 1; k &lt; n; k++) {
+ 35                 <span class="literal">double</span> c = -A[k][i] / A[i][i];
+ 36                 <span class="literal">for</span> (<span class="literal">int</span> j = i; j &lt; n + 1; j++) {
+ 37                     <span class="literal">if</span> (i == j) {
+ 38                         A[k][j] = 0;
+ 39                     } <span class="literal">else</span> {
+ 40                         A[k][j] += c * A[i][j];
+ 41                     }
+ 42                 }
+ 43             }
+ 44         }
+ 45 
+ 46         <span class="comment">// Solve equation Ax=b for an upper triangular matrix A</span>
+ 47         <span class="literal">double</span>[] x = <span class="literal">new</span> <span class="literal">double</span>[n];
+ 48         <span class="literal">for</span> (<span class="literal">int</span> i = n - 1; i &gt;= 0; i--) {
+ 49             x[i] = A[i][n] / A[i][i];
+ 50             <span class="literal">for</span> (<span class="literal">int</span> k = i - 1; k &gt;= 0; k--) {
+ 51                 A[k][n] -= A[k][i] * x[i];
+ 52             }
+ 53         }
+ 54         <span class="literal">return</span> x;
+ 55     }
+ 56 
+ 57     <span class="literal">static</span> <span class="literal">double</span> <span class="ST1">det</span>(<span class="literal">int</span> n, <span class="literal">double</span> mat[][]) {
+ 58         <span class="literal">double</span> d = 0;
+ 59         <span class="literal">int</span> c, subi, i, j, subj;
+ 60         <span class="literal">double</span> submat[][] = <span class="literal">new</span> <span class="literal">double</span>[10][10];
+ 61         <span class="literal">if</span> (n == 2) {
+ 62             <span class="literal">return</span> ((mat[0][0] * mat[1][1]) - (mat[1][0] * mat[0][1]));
+ 63         } <span class="literal">else</span> {
+ 64             <span class="literal">for</span> (c = 0; c &lt; n; c++) {
+ 65                 subi = 0;
+ 66                 <span class="literal">for</span> (i = 1; i &lt; n; i++) {
+ 67                     subj = 0;
+ 68                     <span class="literal">for</span> (j = 0; j &lt; n; j++) {
+ 69                         <span class="literal">if</span> (j == c) {
+ 70                             <span class="literal">continue</span>;
+ 71                         }
+ 72                         submat[subi][subj] = mat[i][j];
+ 73                         subj++;
+ 74                     }
+ 75                     subi++;
+ 76                 }
+ 77                 d = d + (Math.<span class="ST3">pow</span>(-1, c) * mat[0][c] * <span class="ST3">det</span>(n - 1, submat));
+ 78             }
+ 79         }
+ 80         <span class="literal">return</span> d;
+ 81     }
+ 82 
+ 83     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">void</span> <span class="ST1">main</span>(String[] args) {
+ 84         <span class="literal">new</span> Frame();
+ 85     }
+ 86 
+ 87     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">double</span>[][] <span class="ST1">power</span>(<span class="literal">int</span> n, <span class="literal">double</span> a[][]) {
+ 88         <span class="literal">double</span> b[][] = <span class="literal">new</span> <span class="literal">double</span>[10][10];
+ 89         <span class="literal">double</span> c[][] = <span class="literal">new</span> <span class="literal">double</span>[10][10];
+ 90         <span class="literal">int</span> r = a.<span class="ST2">length</span>;
+ 91         <span class="literal">int</span> i, j, k, P, u, t;
+ 92         <span class="literal">for</span> (P = 1; P &lt;= n; P++) {
+ 93             <span class="literal">if</span> (P == 1) {
+ 94                 <span class="literal">for</span> (u = 0; u &lt; r; u++) {
+ 95                     <span class="literal">for</span> (t = 0; t &lt; r; t++) {
+ 96                         <span class="literal">if</span> (t == u) {
+ 97                             c[t][u] = 1;
+ 98                         } <span class="literal">else</span> {
+ 99                             c[t][u] = 0;
+100                         }
+101                     }
+102                 }
+103             }
+104             <span class="literal">for</span> (i = 0; i &lt; r; i++) {
+105                 <span class="literal">for</span> (j = 0; j &lt; r; j++) {
+106                     b[i][j] = 0;
+107                     <span class="literal">for</span> (k = 0; k &lt; r; k++) {
+108                         b[i][j] = b[i][j] + a[i][k] * c[k][j];
+109                     }
+110                 }
+111             }
+112             <span class="literal">for</span> (i = 0; i &lt; r; i++) {
+113                 <span class="literal">for</span> (j = 0; j &lt; r; j++) {
+114                     c[i][j] = b[i][j];
+115                 }
+116             }
+117         }
+118         <span class="literal">return</span> c;
+119     }
+120 
+121     <span class="literal">public</span> <span class="literal">static</span> <span class="literal">double</span>[][] <span class="ST1">multiply</span>(<span class="literal">double</span>[][] first, <span class="literal">double</span>[][] second) {
+122         <span class="literal">int</span> m = first.<span class="ST2">length</span>;
+123         <span class="literal">int</span> n = first[0].<span class="ST2">length</span>;
+124         <span class="literal">int</span> p = second.<span class="ST2">length</span>;
+125         <span class="literal">int</span> q = second[0].<span class="ST2">length</span>;
+126         <span class="literal">double</span> sum = 0;
+127         <span class="literal">double</span>[][] multiply = <span class="literal">new</span> <span class="literal">double</span>[m][q];
+128         <span class="literal">for</span> (<span class="literal">int</span> i = 0; i &lt; m; i++) {
+129             <span class="literal">for</span> (<span class="literal">int</span> j = 0; j &lt; q; j++) {
+130                 <span class="literal">for</span> (<span class="literal">int</span> k = 0; k &lt; p; k++) {
+131                     sum = sum + first[i][k] * second[k][j];
+132                 }
+133                 multiply[i][j] = sum;
+134                 sum = 0;
+135             }
+136         }
+137         <span class="literal">return</span> multiply;
+138     }
+139 
+140     <span class="literal">static</span> <span class="literal">public</span> <span class="literal">double</span>[][] <span class="ST1">inversed</span>(<span class="literal">double</span> A[][]) {
+141         <span class="literal">int</span> n = A.<span class="ST2">length</span>;
+142         <span class="literal">double</span> [][]h = <span class="literal">new</span> <span class="literal">double</span> [n][n];
+143         
+144 
+145         <span class="literal">for</span> (<span class="literal">int</span> i = 0; i &lt; n; i++) {
+146             <span class="comment">// Search for maximum in this column</span>
+147             <span class="literal">double</span> maxEl = <span class="ST3">abs</span>(A[i][i]);
+148             <span class="literal">int</span> maxRow = i;
+149             <span class="literal">for</span> (<span class="literal">int</span> k = i + 1; k &lt; n; k++) {
+150                 <span class="literal">if</span> (<span class="ST3">abs</span>(A[k][i]) &gt; maxEl) {
+151                     maxEl = <span class="ST3">abs</span>(A[k][i]);
+152                     maxRow = k;
+153                 }
+154             }
+155 
+156             <span class="comment">// Swap maximum row with current row (column by column)</span>
+157             <span class="literal">for</span> (<span class="literal">int</span> k = i; k &lt; n; k++) {
+158                 <span class="literal">double</span> tmp = A[maxRow][k];
+159                 A[maxRow][k] = A[i][k];
+160                 A[i][k] = tmp;
+161                 
+162                 <span class="literal">double</span> tmp2 = h[maxRow][k];
+163                 h[maxRow][k] = h[i][k] ;
+164                 h[i][k] = tmp;
+165                 
+166             }
+167 
+168             <span class="comment">// Make all rows below this one 0 in current column</span>
+169             <span class="literal">for</span> (<span class="literal">int</span> k = i + 1; k &lt; n; k++) {
+170                 <span class="literal">double</span> c = -A[k][i] / A[i][i];
+171                 <span class="literal">for</span> (<span class="literal">int</span> j = i; j &lt; n; j++) {
+172                     <span class="literal">if</span> (i == j) {
+173                         A[k][j] = 0;
+174                         h[k][i] = 0 ;
+175                     } <span class="literal">else</span> {
+176                         A[k][j] += c * A[i][j];
+177                         h[k][i]+=c * h[i][j];
+178                     }
+179                 }
+180             }
+181         }
+182         <span class="literal">for</span> (<span class="literal">int</span> i = 0; i &lt; n; i++) {
+183             <span class="literal">for</span> (<span class="literal">int</span> j = 0; j &lt; n; j++) {
+184                 <span class="literal">for</span> (<span class="literal">int</span> k = 0; k &lt; n; k++) {
+185                     <span class="literal">if</span> (A[i][i] == 0) {
+186                         <span class="literal">continue</span>;
+187                     }
+188                     A[j][k] /= A[i][i];
+189                     <span class="literal">if</span>(h[j][k]!=0)
+190                         h[j][k]/=h[i][i];
+191                     
+192                 }
+193             }
+194         }
+195         <span class="literal">return</span> (h);
+196     }
+197 
+198     <span class="literal">static</span> <span class="literal">double</span>[][] <span class="ST1">grade</span>(<span class="literal">double</span>[][] A) {
+199         <span class="literal">int</span> n = A.<span class="ST2">length</span>;
+200 
+201         <span class="literal">for</span> (<span class="literal">int</span> i = 0; i &lt; n; i++) {
+202             <span class="comment">// Search for maximum in this column</span>
+203             <span class="literal">double</span> maxEl = <span class="ST3">abs</span>(A[i][i]);
+204             <span class="literal">int</span> maxRow = i;
+205             <span class="literal">for</span> (<span class="literal">int</span> k = i + 1; k &lt; n; k++) {
+206                 <span class="literal">if</span> (<span class="ST3">abs</span>(A[k][i]) &gt; maxEl) {
+207                     maxEl = <span class="ST3">abs</span>(A[k][i]);
+208                     maxRow = k;
+209                 }
+210             }
+211 
+212             <span class="comment">// Swap maximum row with current row (column by column)</span>
+213             <span class="literal">for</span> (<span class="literal">int</span> k = i; k &lt; n; k++) {
+214                 <span class="literal">double</span> tmp = A[maxRow][k];
+215                 A[maxRow][k] = A[i][k];
+216                 A[i][k] = tmp;
+217             }
+218 
+219             <span class="comment">// Make all rows below this one 0 in current column</span>
+220             <span class="literal">for</span> (<span class="literal">int</span> k = i + 1; k &lt; n; k++) {
+221                 <span class="literal">double</span> c = -A[k][i] / A[i][i];
+222                 <span class="literal">for</span> (<span class="literal">int</span> j = i; j &lt; n; j++) {
+223                     <span class="literal">if</span> (i == j) {
+224                         A[k][j] = 0;
+225                     } <span class="literal">else</span> {
+226                         A[k][j] += c * A[i][j];
+227                     }
+228                 }
+229             }
+230         }
+231         <span class="literal">for</span> (<span class="literal">int</span> i = 0; i &lt; n; i++) {
+232             <span class="literal">for</span> (<span class="literal">int</span> j = 0; j &lt; n; j++) {
+233                 <span class="literal">for</span> (<span class="literal">int</span> k = 0; k &lt; n; k++) {
+234                     <span class="literal">if</span> (A[i][i] == 0) {
+235                         <span class="literal">continue</span>;
+236                     }
+237                     A[j][k] /= A[i][i];
+238                 }
+239             }
+240         }
+241         <span class="literal">return</span> (A);
+242     }
+243 }
+244 
+</pre></body>
+</html>
